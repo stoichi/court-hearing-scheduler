@@ -1,0 +1,13 @@
+<p style="text-align: center">Are you sure you want to delete <strong>{{ object.name }}</strong> scheduled on {{ object.date }} from {{ object.start_time }} to {{ object.end_time }}?</p>
+<form method="post"
+      hx-post="{% url 'hearings:hearing-delete' object.pk %}"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+      hx-swap="none">
+  {% csrf_token %}
+  <div class="form-actions">
+    <button type="button" class="secondary"
+            popovertarget="hearing-form-popup"
+            popovertargetaction="hide">Cancel</button>
+    <button type="submit" class="btn-danger">Delete</button>
+  </div>
+</form>

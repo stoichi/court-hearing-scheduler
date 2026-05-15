@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Court Hearings
+{% endblock %}
+
+{% block content %}
+  <h1>Court Hearings</h1>
+
+  <div id="hearing-form-popup" popover hx-on:htmx:after-swap="this.showPopover()" hx-on:refresh-hearings="this.hidePopover()">
+    {% include 'hearing_form.html' %}
+  </div>
+
+  <div class="page-layout">
+    <div class="table-toolbar">
+      <button class="btn-inline btn-success" hx-get="{% url 'hearings:hearing-create' %}" hx-target="#hearing-form-popup" hx-swap="innerHTML">Book Hearing</button>
+      <button class="icon-button" hx-get="{% url 'hearings:hearing-list' %}" hx-target="#hearing-rows" hx-swap="innerHTML" aria-label="Refresh"><i data-lucide="refresh-cw"></i></button>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Participants</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="hearing-rows" hx-get="{% url 'hearings:hearing-list' %}" hx-trigger="every 30s, refresh-hearings from:body" hx-swap="innerHTML">
+          {% partialdef rows inline %}
+          {% for hearing in hearings %}
+            <tr>
+              <td>{{ hearing.name }}</td>
+              <td>{{ hearing.date }}</td>
+              <td>{{ hearing.start_time }}</td>
+              <td>{{ hearing.end_time }}</td>
+              <td>
+                {% for participant in hearing.participants.all %}
+                  {{ participant.role.name }} | {{ participant.first_name }} {{ participant.last_name }}{% if not forloop.last %}
+                    <br />
+                  {% endif %}
+                {% endfor %}
+              </td>
+              <td>
+                <button class="icon-button btn-warning" hx-get="{% url 'hearings:hearing-update' hearing.pk %}" hx-target="#hearing-form-popup" hx-swap="innerHTML" aria-label="Edit"><i data-lucide="pencil"></i></button>
+                <button class="icon-button btn-danger" hx-get="{% url 'hearings:hearing-delete' hearing.pk %}" hx-target="#hearing-form-popup" hx-swap="innerHTML" aria-label="Delete"><i data-lucide="trash-2"></i></button>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6">No hearings scheduled.</td>
+            </tr>
+          {% endfor %}
+          {% endpartialdef %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
