@@ -28,7 +28,7 @@ def on_hearing_saved(sender, instance: CourtHearing, created: bool, **kwargs) ->
     """
     action = "created" if created else "updated"
     subject = f"Hearing {action}: {instance.name}"
-    body = f"The hearing '{instance.name}' has been {action}.\nDate: {instance.date} | {instance.start_time} – {instance.end_time}"
+    body = f"The hearing '{instance.name}' has been {action}.\nDate: {instance.date} | {instance.start_time} to {instance.end_time}"
 
     for participant in instance.participants.all():
         _mock_send_email(subject, body, participant.email)
