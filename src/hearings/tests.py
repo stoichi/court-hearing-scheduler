@@ -61,7 +61,7 @@ class CourtHearingAPITestCase(APITestCase):
             "participants": [self.judge.id],
         }
         response = self.client.post(
-            reverse("hearings:hearing-api-list"),
+            reverse("hearings:api-root"),
             data=payload,
             format="json",
         )
@@ -85,13 +85,35 @@ class CourtHearingAPITestCase(APITestCase):
             "participants": [self.judge.id],
         }
         response = self.client.post(
-            reverse("hearings:hearing-api-list"),
+            reverse("hearings:api-root"),
             data=payload,
             format="json",
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn("non_field_errors", response.json())
-        self.assertEqual(CourtHearing.objects.count(), 1)
+        self.assertEqual(CourtHearing.objects.count(), 1)  # The existing pre-created test one
+
+    def test_create_hearing_end_before_start(self) -> None:
+        """
+        Verify creating a hearing where the end time is before the start time is rejected.
+        """
+        payload = {
+            "name": "Conflicting Hearing",
+            "date": self.hearing_date.isoformat(),
+            "start_time": "09:30:00",
+            "end_time": "08:30:00",
+            "participants": [self.judge.id],
+        }
+        response = self.client.post(
+            reverse("hearings:api-root"),
+            data=payload,
+            format="json",
+        )
+        data = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("end_time", data)
+        self.assertEqual(data["end_time"], ["End time must be after start time."])
+        self.assertEqual(CourtHearing.objects.count(), 1)  # The existing pre-created test one
 
     def test_retrieve_hearing(self) -> None:
         """

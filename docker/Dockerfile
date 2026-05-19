@@ -13,8 +13,7 @@ WORKDIR /app
 COPY --from=uv /uv /usr/local/bin/uv
 
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev \
-    && uv pip install --python /opt/venv/bin/python gunicorn
+RUN uv sync --frozen --no-dev 
 
 ENV PATH="/opt/venv/bin:${PATH}"
 
