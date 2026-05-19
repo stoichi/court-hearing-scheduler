@@ -8,7 +8,7 @@ A simple mockup of what the scheduling part of a system for booking court hearin
 - There is only one court room so bookings can't overlap
 - Hearings are scheduled on a per-day basis 
 - Any number of people can join the meeting and no specific roles are required
-- Only considers the booking part, there is no part of the joining the hearing
+- Only considers the booking part, there is no part for the joining the hearing
 
 # Shortcuts
 - Using whitenoise for static file delivery for docker
