@@ -56,3 +56,13 @@ A simple mockup of what the scheduling part of a system for booking court hearin
 > Pre-made admin user can be used for demo purposes with 
 >  - Username: admin 
 >  - Password: admin
+
+# Running Tests
+- Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
+- Sync dependencies and run the tests:
+  ``` shell
+  uv sync
+  source .venv/bin/activate # On Windows: .venv\Scripts\activate
+  cd src
+  python manage.py test
+  ```
