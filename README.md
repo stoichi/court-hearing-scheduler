@@ -16,7 +16,7 @@ A simple mockup of what the scheduling part of a system for booking court hearin
 - Envvars are set directly in docker compose rather than a secret manager
 - Using pico css for most css styling
 - Seeding some user data into the database for easier demonstration of the system via django management command
-- New hearings are polled every 30 seconds through HTMX
+- New hearings are polled every 30 seconds through HTMX rather than pushed to all users
 
 # Implementation details
 - Using Django User model as the core Participant model to allow for future improvements and Django permission integrations
@@ -39,6 +39,7 @@ A simple mockup of what the scheduling part of a system for booking court hearin
 - General design and user interaction
 - Show past hearings and current date/time
 - Further tests to check edge cases and non-happy paths
+- E2E tests for testing the whole system
 - Further APIs such as /users/hearings
 - Django logging improvements
 
