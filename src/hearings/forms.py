@@ -20,7 +20,7 @@ class CourtHearingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        # User.__str__ reads self.role so fetch the data to improve performance by limiting unneeded queries
+        # User.__str__ reads role objects so fetch the data to improve performance by limiting unneeded queries
         self.fields["participants"].queryset = (                        # type: ignore  queryset is a member of the field
             self.fields["participants"].queryset.select_related("role") # type: ignore  queryset is a member of the field
         )

@@ -55,7 +55,8 @@ class RoleAPITestCase(APITestCase):
         """
         response = self.client.get(reverse("accounts:role-api-detail", kwargs={"pk": self.role.pk}))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["name"], "Judge")
+        data = response.json()
+        self.assertEqual(data["name"], "Judge")
 
     def test_update_role(self) -> None:
         """

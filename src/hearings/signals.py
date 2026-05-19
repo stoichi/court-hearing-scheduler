@@ -12,6 +12,7 @@ def _mock_send_email(subject: str, body: str, recipient: str) -> None:
     - body: email body text
     - recipient: address that would receive the email
     """
+    # Can be updated to use the send_mail function to send emails via a configured SMTP server
     print(f"[MOCK EMAIL] To: {recipient} | Subject: {subject}\n{body}\n")
 
 

@@ -5,6 +5,7 @@ from datetime import datetime
 
 from accounts.models import User
 
+
 class CourtHearing(models.Model):
     """A scheduled court hearing with participants and a validated time window."""
 
@@ -29,7 +30,7 @@ class CourtHearing(models.Model):
     @classmethod
     def get_conflicting_hearing(cls, target_hearing: "CourtHearing") -> "CourtHearing | None":
         """
-        Find another hearing that overlaps the given hearing's date and time window.
+        Find the first hearing that overlaps the given hearing's date and time window.
 
         Parameters:
         - target_hearing: the hearing whose schedule is being checked for conflicts
@@ -38,7 +39,7 @@ class CourtHearing(models.Model):
         - The first overlapping CourtHearing if one exists
         - None when no other hearing overlaps the target
         """
-        return (
+        first_hearing_obj = (
             cls.objects.exclude(pk=target_hearing.pk)
             .filter(
                 date=target_hearing.date,
@@ -47,6 +48,7 @@ class CourtHearing(models.Model):
             )
             .first()
         )
+        return first_hearing_obj
 
     def clean(self) -> None:
         """
@@ -54,17 +56,21 @@ class CourtHearing(models.Model):
         """
         super().clean()
 
+        # Ensure the date is in the future
         if self.date and self.date < timezone.localdate():
             raise ValidationError({"date": "Date can not be in the past."})
 
+        # Ensure the start time is in the future
         if self.date and self.start_time:
             start_dt = timezone.make_aware(datetime.combine(self.date, self.start_time))
             if start_dt <= timezone.now():
                 raise ValidationError({"start_time": "Start time can not be in the past."})
 
+        # Ensure the end time is after the start time
         if self.start_time >= self.end_time:
             raise ValidationError({"end_time": "End time must be after start time."})
 
+        # Ensure the hearing isn't conflicting with another hearing
         conflicting_hearing = CourtHearing.get_conflicting_hearing(target_hearing=self)
         if conflicting_hearing:
             raise ValidationError(

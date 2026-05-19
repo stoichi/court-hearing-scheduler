@@ -35,8 +35,8 @@
             <tr>
               <td>{{ hearing.name }}</td>
               <td>{{ hearing.date }}</td>
-              <td>{{ hearing.start_time }}</td>
-              <td>{{ hearing.end_time }}</td>
+              <td>{{ hearing.start_time|time:"H:i" }}</td>
+              <td>{{ hearing.end_time|time:"H:i" }}</td>
               <td>
                 {% for participant in hearing.participants.all %}
                   {{ participant.role.name }} | {{ participant.first_name }} {{ participant.last_name }}{% if not forloop.last %}

@@ -34,9 +34,10 @@ A simple mockup of what the scheduling part of a system for booking court hearin
 - Multiple user support
 - SSE or Websockets for updating data
 - Enforce that specific roles are required for a hearing to take place
-- Task Scheduler
+- Task Scheduler for sending emails
 - Secrets manager for storing deployment environment variables
 - General design and user interaction
+- Show past hearings and current date/time
 - Further tests to check edge cases and non-happy paths
 - Further APIs such as /users/hearings
 - Django logging improvements
@@ -48,7 +49,10 @@ A simple mockup of what the scheduling part of a system for booking court hearin
   cd docker
   docker compose up -d
   ```
+- Server is started on port 8000
+- Access locally http://localhost:8000
+- Swagger docs can be found at http://localhost:8000/api/schema/swagger-ui/
 
-- Pre-made admin user can be used for demo purposes with 
-  - Username: admin 
-  - Password: admin
+> Pre-made admin user can be used for demo purposes with 
+>  - Username: admin 
+>  - Password: admin

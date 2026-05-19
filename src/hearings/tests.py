@@ -12,7 +12,7 @@ from .models import CourtHearing
 class CourtHearingAPITestCase(APITestCase):
     def setUp(self) -> None:
         """
-        Build baseline roles, users, and a single hearing used by the API tests.
+        Build dummy roles, users, and a single hearing used by the API tests.
         """
         # Pre-make roles
         self.judge_role = baker.make(Role, name="Judge")

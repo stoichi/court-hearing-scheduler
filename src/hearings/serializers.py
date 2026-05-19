@@ -1,17 +1,21 @@
 from datetime import datetime
 
 from django.utils import timezone
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, ValidationError
+
+from accounts.serializers import UserSerializer
 
 from .models import CourtHearing
 
 
-class CourtHearingSerializer(serializers.ModelSerializer):
+class CourtHearingSerializer(ModelSerializer):
     """Serializes CourtHearing records and validates dates, time windows, and conflicts."""
+
+    participants = UserSerializer(many=True, read_only=True)
 
     class Meta:
         model = CourtHearing
-        fields = "__all__"
+        fields = ["id", "name", "description", "date", "start_time", "end_time", "participants"]
 
     def validate_date(self, value):
         """
@@ -24,7 +28,7 @@ class CourtHearingSerializer(serializers.ModelSerializer):
         - The original date when it is today or later
         """
         if value < timezone.localdate():
-            raise serializers.ValidationError("Date can not be in the past.")
+            raise ValidationError("Date can not be in the past.")
         return value
 
     def validate(self, attrs: dict) -> dict:
@@ -37,6 +41,8 @@ class CourtHearingSerializer(serializers.ModelSerializer):
         Return:
         - The validated attrs dictionary, unchanged
         """
+        # Validate the fields for the CourtHearing model. This is done within the model itself but these
+        # validate commands allow DRF to return invalid before attempting to create the model object
         date = attrs.get("date") or getattr(self.instance, "date", None)
         start_time = attrs.get("start_time") or getattr(self.instance, "start_time", None)
         end_time = attrs.get("end_time") or getattr(self.instance, "end_time", None)
@@ -45,17 +51,13 @@ class CourtHearingSerializer(serializers.ModelSerializer):
         if date and start_time:
             start_dt = timezone.make_aware(datetime.combine(date, start_time))
             if start_dt <= timezone.now():
-                raise serializers.ValidationError(
-                    {"start_time": "Start time can not be in the past."}
-                )
+                raise ValidationError({"start_time": "Start time can not be in the past."})
 
         # Ensure the end time is after the start time
         if start_time and end_time and start_time >= end_time:
-            raise serializers.ValidationError(
-                {"end_time": "End time must be after start time."}
-            )
+            raise ValidationError({"end_time": "End time must be after start time."})
 
-        # Check for overlap with any other hearings 
+        # Check for overlap with any other hearings
         if date and start_time and end_time:
             conflict_qs = CourtHearing.objects.filter(
                 date=date,
@@ -67,7 +69,7 @@ class CourtHearingSerializer(serializers.ModelSerializer):
                 conflict_qs = conflict_qs.exclude(pk=self.instance.pk)
             conflicting_hearing = conflict_qs.first()
             if conflicting_hearing:
-                raise serializers.ValidationError(
+                raise ValidationError(
                     f"Hearing time conflicts with an existing hearing on {conflicting_hearing.date} from {conflicting_hearing.start_time} to {conflicting_hearing.end_time}."
                 )
 
